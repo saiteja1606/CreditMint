@@ -20,7 +20,7 @@ const navItems = [
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
 
-const mobileNavItems = navItems.filter((item) => item.label !== 'Settings' && item.label !== 'Notifications')
+const mobileNavItems = navItems.filter((item) => item.label !== 'Settings')
 
 const pageTitleMap = {
   '/dashboard': 'Dashboard',
@@ -224,7 +224,7 @@ export default function AppLayout() {
         </main>
 
         <nav className="lg:hidden fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 dark:border-slate-700/80 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl pb-[max(env(safe-area-inset-bottom),0.5rem)]">
-          <div className="grid grid-cols-5 gap-1 px-2 pt-2">
+          <div className="grid grid-cols-6 gap-1 px-2 pt-2">
             {mobileNavItems.map(({ to, icon: Icon, label }) => (
               <NavLink
                 key={to}
@@ -241,6 +241,11 @@ export default function AppLayout() {
                   <>
                     <div className={`relative flex h-8 w-8 items-center justify-center rounded-2xl transition-all ${isActive ? 'gradient-brand text-white shadow-lg shadow-brand-500/25' : 'bg-slate-100 dark:bg-slate-700/60'}`}>
                       <Icon size={16} />
+                      {label === 'Notifications' && unreadCount > 0 && (
+                        <span className="absolute -right-1 -top-1 min-w-[16px] rounded-full bg-red-500 px-1 text-[10px] font-bold leading-4 text-white">
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                      )}
                     </div>
                     <span className="truncate">{label}</span>
                   </>

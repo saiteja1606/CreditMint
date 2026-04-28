@@ -76,13 +76,11 @@ export default function DashboardPage() {
         <p className="mt-2 max-w-sm text-sm text-white/70">Track portfolio health, cash flow, and upcoming follow-ups in one mobile-friendly dashboard.</p>
       </section>
 
-      <section className="-mx-4 overflow-x-auto px-4 no-scrollbar sm:mx-0 sm:px-0">
-        <div className="flex gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-          {kpis.map((kpi, i) => (
-            <KPICard key={kpi.title} {...kpi} index={i} />
-          ))}
-        </div>
-      </section>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {kpis.map((kpi, i) => (
+          <KPICard key={kpi.title} {...kpi} index={i} />
+        ))}
+      </div>
 
       {summary?.overdueCount > 0 && (
         <section className="rounded-[24px] border border-red-200 bg-red-50 p-4 shadow-sm dark:border-red-900/40 dark:bg-red-900/10">
@@ -101,32 +99,28 @@ export default function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
-        <section className="card flex flex-col p-4 sm:p-5 lg:col-span-2 lg:h-[420px]">
+        <section className="card p-4 sm:p-5 lg:col-span-2">
           <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-white">Monthly Analytics</h2>
-          <div className="flex-1 min-h-0">
-            {monthly.length > 0 ? (
-              <MonthlyChart data={monthly} />
-            ) : (
-              <div className="flex h-full items-center justify-center text-sm text-slate-400">No data yet</div>
-            )}
-          </div>
+          {monthly.length > 0 ? (
+            <MonthlyChart data={monthly} />
+          ) : (
+            <div className="flex h-64 items-center justify-center text-sm text-slate-400">No data yet</div>
+          )}
         </section>
 
-        <section className="card flex flex-col p-4 sm:p-5 lg:h-[420px]">
+        <section className="card p-4 sm:p-5">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-bold text-slate-900 dark:text-white">Recent Alerts</h2>
             <Link to="/notifications" className="text-xs font-semibold text-brand-600 hover:underline dark:text-brand-400">View all</Link>
           </div>
-          <div className="flex-1 overflow-y-auto no-scrollbar">
-            {notifications.length > 0 ? (
-              <NotificationTimeline notifications={notifications} onMarkRead={markRead} />
-            ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-2 py-10 text-center text-sm text-slate-400">
-                <Bell size={28} className="text-slate-300" />
-                No alerts yet
-              </div>
-            )}
-          </div>
+          {notifications.length > 0 ? (
+            <NotificationTimeline notifications={notifications} onMarkRead={markRead} />
+          ) : (
+            <div className="flex flex-col items-center gap-2 py-10 text-center text-sm text-slate-400">
+              <Bell size={28} className="text-slate-300" />
+              No alerts yet
+            </div>
+          )}
         </section>
       </div>
 

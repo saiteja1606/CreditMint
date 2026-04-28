@@ -95,17 +95,17 @@ export default function BorrowersPage() {
           {borrowers.map((borrower, index) => {
             const isMenuOpen = activeMenu === borrower.id
             return (
-              <div key={borrower.id} className="relative group w-full">
+              <div key={borrower.id} className="group relative">
                 <BorrowerCard borrower={borrower} index={index} />
                 
-                <div className="absolute right-2 top-2 z-10">
+                <div className="absolute right-3 top-3 z-10">
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       setActiveMenu(isMenuOpen ? null : borrower.id);
                     }}
-                    className={`p-2 rounded-xl transition-all ${isMenuOpen ? 'bg-white dark:bg-slate-700 shadow-md text-brand-600' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                    className={`p-2 rounded-xl transition-all ${isMenuOpen ? 'bg-white dark:bg-slate-700 shadow-md text-brand-600' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}
                   >
                     <MoreVertical size={18} />
                   </button>

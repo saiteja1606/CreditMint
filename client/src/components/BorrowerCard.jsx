@@ -10,7 +10,7 @@ export default function BorrowerCard({ borrower, index = 0 }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, duration: 0.35 }}
     >
-      <Link to={`/borrowers/${borrower.id}`} className="card block p-4 sm:p-5 pr-10 sm:pr-12 flex items-start gap-3 sm:gap-4 hover:shadow-lg dark:hover:shadow-slate-900/50 transition-all duration-200 group">
+      <Link to={`/borrowers/${borrower.id}`} className="card block p-4 sm:p-5 pr-12 flex items-start gap-3 sm:gap-4 hover:shadow-lg dark:hover:shadow-slate-900/50 transition-all duration-200 group">
         {/* Avatar */}
         <div className="h-12 w-12 rounded-2xl gradient-brand flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-lg shadow-brand-500/20">
           {getInitials(borrower.name)}
@@ -38,7 +38,7 @@ export default function BorrowerCard({ borrower, index = 0 }) {
           </div>
         </div>
 
-        <ChevronRight size={16} className="mt-1 flex-shrink-0 text-slate-400 transition-transform group-hover:translate-x-1 hidden sm:block" />
+        <ChevronRight size={16} className="mt-1 flex-shrink-0 text-slate-400 transition-transform group-hover:translate-x-1" />
       </Link>
     </motion.div>
   )
