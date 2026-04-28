@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --scrollbar-track: #f1f5f9;
+    --scrollbar-thumb: #cbd5e1;
+  }
+  .dark {
+    --scrollbar-track: #1e293b;
+    --scrollbar-thumb: #334155;
+  }
+
+  * {
+    @apply border-slate-200 dark:border-slate-700;
+  }
+  body {
+    @apply bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+}
+
+@layer components {
+  /* Glass card */
+  .glass-card {
+    @apply bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-white/60 dark:border-slate-700/60 rounded-2xl shadow-card dark:shadow-card-dark;
+  }
+  /* Solid card */
+  .card {
+    @apply bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/80 rounded-2xl shadow-card dark:shadow-card-dark;
+  }
+  /* Brand gradient */
+  .gradient-brand {
+    @apply bg-gradient-to-r from-brand-600 to-teal-600;
+  }
+  .gradient-brand-text {
+    @apply bg-gradient-to-r from-brand-500 to-teal-500 bg-clip-text text-transparent;
+  }
+  /* Inputs */
+  .input-base {
+    @apply w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500 transition-all duration-200 text-sm min-h-[48px];
+  }
+  .label-base {
+    @apply block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2;
+  }
+  /* Skeleton shimmer */
+  .skeleton {
+    @apply bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-700 dark:via-slate-600 dark:to-slate-700;
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
+  /* Status badges */
+  .badge-pending  { @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400; }
+  .badge-paid     { @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400; }
+  .badge-overdue  { @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .mobile-page {
+    @apply p-4 sm:p-6;
+    padding-top: 1rem;
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+  @screen lg {
+    .mobile-page {
+      @apply p-6;
+      padding-bottom: 1.5rem;
+    }
+  }
+  .mobile-sticky-actions {
+    @apply fixed inset-x-0 bottom-0 z-20 border-t border-slate-200/80 dark:border-slate-700/80 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl p-3;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+  @screen lg {
+    .mobile-sticky-actions {
+      position: static;
+      border-top-width: 0;
+      background: transparent;
+      backdrop-filter: none;
+      padding: 0;
+    }
+  }
+}
