@@ -50,28 +50,30 @@ export default function BorrowersPage() {
   const openNew = () => { setEditBorrower(null); setModalOpen(true) }
 
   return (
-    <div className="mobile-page mx-auto max-w-5xl space-y-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mobile-page mx-auto max-w-5xl space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Borrowers</h1>
-          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">{borrowers.length} borrower{borrowers.length !== 1 ? 's' : ''}</p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Borrowers</h1>
+          <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">{borrowers.length} active contacts</p>
         </div>
-        <button onClick={openNew} className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl gradient-brand px-4 py-3 text-sm font-medium text-white shadow-lg shadow-brand-500/25 transition-opacity hover:opacity-90 sm:w-auto">
-          <Plus size={16} />
+        <button onClick={openNew} className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl gradient-brand px-6 text-sm font-bold text-white shadow-lg shadow-brand-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] sm:w-auto">
+          <Plus size={18} />
           Add Borrower
         </button>
       </div>
 
-      <div className="card border-none bg-white/50 p-3 backdrop-blur-md dark:bg-slate-800/50 sm:p-4 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700/50">
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, phone, or email..."
-            className="input-base pl-12 bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700 focus:ring-brand-500/20"
-          />
+      <div className="sticky top-[calc(env(safe-area-inset-top)+60px)] sm:top-0 z-20">
+        <div className="card border-none bg-white/70 p-3 backdrop-blur-xl dark:bg-slate-800/70 shadow-lg ring-1 ring-slate-200/50 dark:ring-slate-700/50">
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name, phone..."
+              className="input-base pl-12 h-12 bg-transparent border-transparent focus:ring-0"
+            />
+          </div>
         </div>
       </div>
 

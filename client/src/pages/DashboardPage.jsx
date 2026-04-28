@@ -67,31 +67,39 @@ export default function DashboardPage() {
   ] : []
 
   return (
-    <div className="mobile-page mx-auto max-w-7xl space-y-5 sm:space-y-6">
-      <section className="rounded-[28px] bg-gradient-to-br from-slate-900 via-slate-800 to-brand-900 p-5 text-white shadow-xl shadow-slate-900/20">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/65">Overview</p>
-        <h1 className="mt-2 text-2xl font-bold leading-tight">
-          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}, {user?.name?.split(' ')[0]}
-        </h1>
-        <p className="mt-2 max-w-sm text-sm text-white/70">Track portfolio health, cash flow, and upcoming follow-ups in one mobile-friendly dashboard.</p>
+    <div className="mobile-page mx-auto max-w-7xl space-y-6 sm:space-y-8">
+      <section className="relative overflow-hidden rounded-[32px] bg-slate-900 px-6 py-7 text-white shadow-2xl shadow-slate-900/40">
+        {/* Decorative blobs */}
+        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-brand-500/20 blur-3xl" />
+        <div className="absolute -left-8 -bottom-8 h-32 w-32 rounded-full bg-indigo-500/20 blur-3xl" />
+        
+        <div className="relative z-10">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-400">Portfolio Status</p>
+          <h1 className="mt-2 text-2xl font-extrabold tracking-tight">
+            Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}, {user?.name?.split(' ')[0]}
+          </h1>
+          <p className="mt-3 max-w-[280px] text-xs leading-relaxed text-slate-400">
+            You have <span className="font-bold text-white">{summary?.loanCounts?.pending || 0} active loans</span> to track today.
+          </p>
+        </div>
       </section>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3.5 sm:gap-4 lg:grid-cols-4">
         {kpis.map((kpi, i) => (
           <KPICard key={kpi.title} {...kpi} index={i} />
         ))}
       </div>
 
       {summary?.overdueCount > 0 && (
-        <section className="rounded-[24px] border border-red-200 bg-red-50 p-4 shadow-sm dark:border-red-900/40 dark:bg-red-900/10">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-2xl bg-red-100 dark:bg-red-900/30">
-              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+        <section className="rounded-[28px] border border-rose-200/50 bg-rose-50/50 p-4 shadow-sm dark:border-rose-900/30 dark:bg-rose-900/10 backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-rose-900/30">
+              <AlertTriangle className="h-6 w-6 text-rose-600 dark:text-rose-400" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-red-700 dark:text-red-300">Overdue attention needed</h2>
-              <p className="mt-1 text-sm leading-6 text-red-600/90 dark:text-red-200/80">
-                {summary.overdueCount} overdue loan{summary.overdueCount > 1 ? 's are' : ' is'} affecting {formatCurrency(summary.pendingAmount)} in pending recovery.
+              <h2 className="text-sm font-bold text-rose-900 dark:text-rose-100">Action Required</h2>
+              <p className="mt-0.5 text-xs font-medium text-rose-600/90 dark:text-rose-300/80">
+                {summary.overdueCount} loan{summary.overdueCount > 1 ? 's are' : ' is'} overdue.
               </p>
             </div>
           </div>
@@ -136,19 +144,19 @@ export default function DashboardPage() {
                 <Link
                   key={loan.id}
                   to={`/loans/${loan.id}`}
-                  className="block rounded-[22px] border border-slate-100 p-3.5 transition-all hover:border-brand-300 hover:bg-brand-50 hover:shadow-md dark:border-slate-700/50 dark:hover:border-brand-700/50 dark:hover:bg-brand-900/10"
+                  className="block rounded-[24px] border border-slate-100 p-4 transition-all active:scale-[0.98] active:bg-slate-50 dark:border-slate-700/50 dark:active:bg-slate-900/40"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate text-sm font-medium text-slate-900 dark:text-white">{loan.borrower?.name}</p>
+                      <p className="truncate text-base font-bold text-slate-900 dark:text-white leading-tight">{loan.borrower?.name}</p>
+                      <div className="mt-2 flex items-center gap-2">
                         <StatusBadge status={loan.status} />
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Due {formatDate(loan.dueDate)}</span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-400">Due {formatDate(loan.dueDate)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(loan.totalAmount)}</p>
-                      <p className="text-xs text-slate-400">{formatCurrency(loan.paidAmount)} paid</p>
+                      <p className="text-base font-black text-slate-900 dark:text-white">{formatCurrency(loan.totalAmount)}</p>
+                      <p className="mt-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">{formatCurrency(loan.paidAmount)} paid</p>
                     </div>
                   </div>
                 </Link>

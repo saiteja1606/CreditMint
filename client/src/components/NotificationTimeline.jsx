@@ -22,29 +22,30 @@ export default function NotificationTimeline({ notifications, onMarkRead }) {
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.04 }}
-            className={`flex gap-3 sm:gap-4 p-4 sm:p-4.5 rounded-[22px] border transition-all cursor-pointer group shadow-sm
+            whileTap={{ scale: 0.98 }}
+            className={`flex gap-4 p-4 rounded-[28px] border transition-all cursor-pointer active:bg-slate-50 dark:active:bg-slate-900/40
               ${n.isRead
-                ? 'border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30'
-                : 'border-brand-200 dark:border-brand-800/50 bg-brand-50/70 dark:bg-brand-900/10 hover:bg-brand-50 dark:hover:bg-brand-900/20'
+                ? 'border-slate-100 dark:border-slate-700/50'
+                : 'border-brand-200 dark:border-brand-800/50 bg-brand-50/50 dark:bg-brand-900/10'
               }`}
             onClick={() => !n.isRead && onMarkRead(n.id)}
           >
             {/* Icon */}
-            <div className={`w-11 h-11 rounded-2xl ${cfg.bg} flex items-center justify-center flex-shrink-0`}>
-              <Icon size={18} className={cfg.color} />
+            <div className={`w-12 h-12 rounded-[20px] ${cfg.bg} flex items-center justify-center flex-shrink-0 shadow-sm ring-4 ring-white dark:ring-slate-800`}>
+              <Icon size={20} className={cfg.color} />
             </div>
-
+ 
             {/* Content */}
-            <div className="flex-1 min-w-0">
-              <p className={`text-sm leading-6 ${n.isRead ? 'text-slate-600 dark:text-slate-400' : 'text-slate-900 dark:text-slate-100 font-medium'}`}>
+            <div className="flex-1 min-w-0 pt-0.5">
+              <p className={`text-sm leading-relaxed ${n.isRead ? 'text-slate-500 dark:text-slate-400 font-medium' : 'text-slate-900 dark:text-slate-100 font-bold'}`}>
                 {n.message}
               </p>
-              <p className="mt-2 text-xs font-medium text-slate-400">{timeAgo(n.createdAt)}</p>
+              <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">{timeAgo(n.createdAt)}</p>
             </div>
-
+ 
             {/* Unread dot */}
             {!n.isRead && (
-              <div className="mt-2 h-2.5 w-2.5 rounded-full bg-brand-500 flex-shrink-0" />
+              <div className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-500 flex-shrink-0 shadow-lg shadow-brand-500/50" />
             )}
           </motion.div>
         )
