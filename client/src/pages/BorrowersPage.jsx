@@ -62,18 +62,16 @@ export default function BorrowersPage() {
         </button>
       </div>
 
-      <div className="sticky top-[calc(env(safe-area-inset-top)+60px)] sm:top-0 z-20">
-        <div className="card border-none bg-white/70 p-3 backdrop-blur-xl dark:bg-slate-800/70 shadow-lg ring-1 ring-slate-200/50 dark:ring-slate-700/50">
-          <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, phone..."
-              className="input-base pl-12 h-12 bg-transparent border-transparent focus:ring-0"
-            />
-          </div>
+      <div className="card border-none bg-white/70 p-3 backdrop-blur-xl dark:bg-slate-800/70 shadow-lg ring-1 ring-slate-200/50 dark:ring-slate-700/50">
+        <div className="relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name, phone..."
+            className="input-base pl-12 h-12 bg-transparent border-transparent focus:ring-0"
+          />
         </div>
       </div>
 
@@ -100,16 +98,16 @@ export default function BorrowersPage() {
               <div key={borrower.id} className="group relative">
                 <BorrowerCard borrower={borrower} index={index} />
                 
-                <div className="absolute right-3 top-3 z-10">
+                <div className="absolute right-2 top-2 z-10">
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       setActiveMenu(isMenuOpen ? null : borrower.id);
                     }}
-                    className={`p-2 rounded-xl transition-all ${isMenuOpen ? 'bg-white dark:bg-slate-700 shadow-md text-brand-600' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}
+                    className={`p-2.5 rounded-2xl transition-all ${isMenuOpen ? 'bg-white dark:bg-slate-700 shadow-md text-brand-600' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
                   >
-                    <MoreVertical size={18} />
+                    <MoreVertical size={20} />
                   </button>
 
                   <AnimatePresence>

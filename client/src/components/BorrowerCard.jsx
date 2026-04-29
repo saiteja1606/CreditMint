@@ -9,7 +9,6 @@ export default function BorrowerCard({ borrower, index = 0 }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, duration: 0.35 }}
-      whileTap={{ scale: 0.98 }}
       className="group relative"
     >
       <Link to={`/borrowers/${borrower.id}`} className="card block overflow-hidden rounded-[24px] p-5 pr-14 transition-all duration-200 active:bg-slate-50 dark:active:bg-slate-900/40">

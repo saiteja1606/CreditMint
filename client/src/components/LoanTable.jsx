@@ -41,7 +41,6 @@ export default function LoanTable({ loans, onPay, onCollectInterest, onEdit, onD
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
-              whileTap={{ scale: 0.98 }}
               className="relative rounded-[28px] border border-slate-200/60 bg-white p-5 shadow-sm dark:border-slate-700/50 dark:bg-slate-800"
             >
               <div className="flex items-start justify-between gap-3">
@@ -134,7 +133,7 @@ export default function LoanTable({ loans, onPay, onCollectInterest, onEdit, onD
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-2 gap-4">
+              <div className="mt-4 grid grid-cols-2 gap-3">
                 <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-slate-700/30 dark:bg-slate-700/20">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Principal</p>
                   <p className="mt-1 text-base font-bold text-slate-900 dark:text-white">{formatCurrency(loan.amount)}</p>
@@ -147,8 +146,8 @@ export default function LoanTable({ loans, onPay, onCollectInterest, onEdit, onD
                 </div>
               </div>
 
-              <div className="mt-5">
-                <div className="mb-2.5 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider">
+              <div className="mt-4">
+                <div className="mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider">
                   <span className="text-slate-400">{Math.round(pct)}% Repaid</span>
                   <span className="text-brand-600 dark:text-brand-400">{formatCurrency(loan.paidAmount)} collected</span>
                 </div>

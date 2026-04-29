@@ -191,7 +191,7 @@ export default function AppLayout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Mobile header */}
-        <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-700/70 pt-[calc(env(safe-area-inset-top)+0.75rem)]">
+        <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-700/70">
           <button onClick={() => setSidebarOpen(true)} className="p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors min-h-11 min-w-11">
             <Menu size={20} className="text-slate-600 dark:text-slate-300" />
           </button>

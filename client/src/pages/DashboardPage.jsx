@@ -68,17 +68,17 @@ export default function DashboardPage() {
 
   return (
     <div className="mobile-page mx-auto max-w-7xl space-y-6 sm:space-y-8">
-      <section className="relative overflow-hidden rounded-[32px] bg-slate-900 px-6 py-7 text-white shadow-2xl shadow-slate-900/40">
+      <section className="relative overflow-hidden rounded-[28px] bg-slate-900 px-5 py-5 text-white shadow-2xl shadow-slate-900/40">
         {/* Decorative blobs */}
-        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-brand-500/20 blur-3xl" />
-        <div className="absolute -left-8 -bottom-8 h-32 w-32 rounded-full bg-indigo-500/20 blur-3xl" />
+        <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-brand-500/20 blur-3xl" />
+        <div className="absolute -left-8 -bottom-8 h-24 w-24 rounded-full bg-indigo-500/20 blur-3xl" />
         
         <div className="relative z-10">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-400">Portfolio Status</p>
-          <h1 className="mt-2 text-2xl font-extrabold tracking-tight">
+          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand-400">Portfolio Status</p>
+          <h1 className="mt-1.5 text-xl font-extrabold tracking-tight">
             Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}, {user?.name?.split(' ')[0]}
           </h1>
-          <p className="mt-3 max-w-[280px] text-xs leading-relaxed text-slate-400">
+          <p className="mt-2.5 max-w-[240px] text-[11px] leading-relaxed text-slate-400">
             You have <span className="font-bold text-white">{summary?.loanCounts?.pending || 0} active loans</span> to track today.
           </p>
         </div>

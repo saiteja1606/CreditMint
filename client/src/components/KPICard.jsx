@@ -19,26 +19,26 @@ export default function KPICard({ title, value, isCurrency = true, trend, icon: 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.4 }}
-      className="card min-w-0 p-4 sm:p-5 flex flex-col gap-4 transition-all duration-300"
+      className="card min-w-0 p-3.5 sm:p-5 flex flex-col gap-2.5 transition-all duration-300"
     >
       <div className="flex items-start justify-between">
-        <div className={`h-11 w-11 rounded-2xl bg-gradient-to-br ${colorMap[color]} shadow-lg flex items-center justify-center flex-shrink-0`}>
-          {Icon && <Icon className="h-5 w-5 text-white" />}
+        <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${colorMap[color]} shadow-lg flex items-center justify-center flex-shrink-0`}>
+          {Icon && <Icon className="h-4.5 w-4.5 text-white" />}
         </div>
         {trend !== undefined && (
-          <div className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full
+          <div className={`flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full
             ${trend > 0 ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' :
               trend < 0 ? 'bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400' :
               'bg-slate-100 dark:bg-slate-700 text-slate-500'}`}
           >
-            {trend > 0 ? <TrendingUp size={10} /> : trend < 0 ? <TrendingDown size={10} /> : <Minus size={10} />}
+            {trend > 0 ? <TrendingUp size={9} /> : trend < 0 ? <TrendingDown size={9} /> : <Minus size={9} />}
             {Math.abs(trend)}%
           </div>
         )}
       </div>
       <div className="min-w-0">
-        <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{title}</p>
-        <p className="mt-1 truncate text-lg sm:text-2xl font-bold text-slate-900 dark:text-white leading-tight">{displayValue}</p>
+        <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-[0.12em]">{title}</p>
+        <p className="mt-0.5 truncate text-lg font-bold text-slate-900 dark:text-white leading-tight">{displayValue}</p>
       </div>
     </motion.div>
   )

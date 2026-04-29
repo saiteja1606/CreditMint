@@ -1,6 +1,10 @@
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 const DEFAULT_FROM = 'Credit Mint <noreply@creditmint.app>';
+
+// Initialize Resend if API key is present
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const formatCurrency = (amount) => {
   const value = Number(amount || 0);
@@ -42,6 +46,8 @@ const createTransporter = (smtpOverride = {}) => {
     host: config.host,
     port: config.port,
     secure: config.port === 465,
+    connectionTimeout: 10000, // 10s timeout
+    greetingTimeout: 10000,
     auth: {
       user: config.user,
       pass: config.pass,
@@ -51,19 +57,56 @@ const createTransporter = (smtpOverride = {}) => {
   return { transporter, config };
 };
 
+/**
+ * Retry helper for Resend API calls
+ */
+const withRetry = async (fn, retries = 3, delay = 1000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const isLastAttempt = i === retries - 1;
+      const shouldRetry = error.name === 'TimeoutError' || (error.statusCode && (error.statusCode >= 500 || error.statusCode === 429));
+      
+      if (isLastAttempt || !shouldRetry) throw error;
+      
+      console.warn(`[Email] Retry attempt ${i + 1} failed. Retrying in ${delay}ms...`);
+      await new Promise(r => setTimeout(r, delay));
+      delay *= 2; // Exponential backoff
+    }
+  }
+};
+
 const verifyEmailConnection = async (smtpOverride = {}) => {
-  const { transporter, config } = createTransporter(smtpOverride);
-  if (!transporter) {
-    return { ok: false, skipped: true, reason: 'SMTP not configured' };
+  // If user has custom SMTP, verify it
+  if (Object.keys(smtpOverride).length > 0 && smtpOverride.host) {
+    const { transporter, config } = createTransporter(smtpOverride);
+    if (!transporter) return { ok: false, reason: 'SMTP not fully configured' };
+    try {
+      await transporter.verify();
+      return { ok: true, type: 'SMTP', config };
+    } catch (error) {
+      return { ok: false, reason: error.message };
+    }
   }
 
-  try {
-    await transporter.verify();
-    return { ok: true, skipped: false, config };
-  } catch (error) {
-    console.error('[Email] SMTP verification failed:', error.message);
-    return { ok: false, skipped: false, reason: error.message, config };
+  // Otherwise check Resend
+  if (resend) {
+    return { ok: true, type: 'RESEND', provider: 'Resend API' };
   }
+
+  // Check global SMTP as fallback
+  const { transporter, config } = createTransporter();
+  if (transporter) {
+    try {
+      await transporter.verify();
+      return { ok: true, type: 'GLOBAL_SMTP', config };
+    } catch (error) {
+      return { ok: false, reason: 'Global SMTP failed and Resend not configured' };
+    }
+  }
+
+  return { ok: false, reason: 'No email provider configured' };
 };
 
 const buildEmailLayout = ({
@@ -292,24 +335,61 @@ const buildReminderEmail = (templateType, payload) => {
 };
 
 const sendEmail = async (to, subject, html, text = '', smtpOverride = {}) => {
-  const { transporter, config } = createTransporter(smtpOverride);
-  if (!transporter) {
-    return { sent: false, skipped: true, reason: 'SMTP not configured' };
+  const hasOverride = Object.keys(smtpOverride).length > 0 && smtpOverride.host;
+
+  // 1. Use User SMTP if provided
+  if (hasOverride) {
+    const { transporter, config } = createTransporter(smtpOverride);
+    if (!transporter) return { sent: false, error: 'User SMTP override incomplete' };
+    
+    try {
+      const info = await transporter.sendMail({ from: config.from, to, subject, html, text });
+      return { sent: true, provider: 'USER_SMTP', messageId: info.messageId };
+    } catch (error) {
+      console.error(`[Email] User SMTP failed for ${to}:`, error.message);
+      return { sent: false, error: error.message };
+    }
   }
 
-  try {
-    const info = await transporter.sendMail({
-      from: config.from,
-      to,
-      subject,
-      html,
-      text,
-    });
-    return { sent: true, messageId: info.messageId };
-  } catch (error) {
-    console.error(`[Email] Failed to send email to ${to}:`, error.message);
-    return { sent: false, error: error.message };
+  // 2. Use Resend API if configured
+  if (resend) {
+    try {
+      const result = await withRetry(async () => {
+        const response = await resend.emails.send({
+          from: process.env.RESEND_FROM || DEFAULT_FROM,
+          to,
+          subject,
+          html,
+          text,
+          tags: [{ name: 'category', value: 'reminder' }]
+        });
+        if (response.error) {
+          const err = new Error(response.error.message);
+          err.statusCode = response.error.statusCode || 500;
+          throw err;
+        }
+        return response;
+      });
+      
+      return { sent: true, provider: 'RESEND', messageId: result.data.id };
+    } catch (error) {
+      console.error(`[Email] Resend failed for ${to}:`, error.message);
+    }
   }
+
+  // 3. Fallback to Global SMTP
+  const { transporter, config } = createTransporter();
+  if (transporter) {
+    try {
+      const info = await transporter.sendMail({ from: config.from, to, subject, html, text });
+      return { sent: true, provider: 'GLOBAL_SMTP', messageId: info.messageId };
+    } catch (error) {
+      console.error(`[Email] Global SMTP failed for ${to}:`, error.message);
+      return { sent: false, error: error.message };
+    }
+  }
+
+  return { sent: false, skipped: true, reason: 'SMTP not configured' };
 };
 
 const sendTemplateEmail = async (templateType, payload, smtpOverride = {}) => {
