@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Modal from './Modal'
 import { borrowerSchema } from '../validations/schemas'
+import { LoadingButtonContent } from './Loading'
 
 export default function BorrowerModal({ isOpen, onClose, borrower, onSave }) {
   const isEdit = !!borrower
@@ -18,14 +19,16 @@ export default function BorrowerModal({ isOpen, onClose, borrower, onSave }) {
     } else {
       reset({ name: '', phone: '', email: '', address: '', notes: '' })
     }
-  }, [borrower, isOpen])
+  }, [borrower, isOpen, reset])
 
   const onSubmit = async (data) => {
     try {
       await onSave(data, isEdit ? borrower.id : null)
       reset()
       onClose()
-    } catch {}
+    } catch {
+      // Caller owns toast messaging.
+    }
   }
 
   const handleClose = () => { reset(); onClose() }
@@ -35,34 +38,36 @@ export default function BorrowerModal({ isOpen, onClose, borrower, onSave }) {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="label-base">Full Name *</label>
-          <input {...register('name')} type="text" placeholder="Ravi Kumar" className="input-base" />
+          <input {...register('name')} type="text" placeholder="Ravi Kumar" className="input-base" disabled={isSubmitting} />
           {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <label className="label-base">Phone</label>
-            <input {...register('phone')} type="tel" placeholder="+91 98765 43210" className="input-base" />
+            <input {...register('phone')} type="tel" placeholder="+91 98765 43210" className="input-base" disabled={isSubmitting} />
           </div>
           <div>
             <label className="label-base">Email</label>
-            <input {...register('email')} type="email" placeholder="email@example.com" className="input-base" />
+            <input {...register('email')} type="email" placeholder="email@example.com" className="input-base" disabled={isSubmitting} />
             {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
           </div>
         </div>
         <div>
           <label className="label-base">Address</label>
-          <input {...register('address')} type="text" placeholder="City, State" className="input-base" />
+          <input {...register('address')} type="text" placeholder="City, State" className="input-base" disabled={isSubmitting} />
         </div>
         <div>
           <label className="label-base">Notes</label>
-          <textarea {...register('notes')} rows={2} placeholder="Any notes about this borrower…" className="input-base resize-none" />
+          <textarea {...register('notes')} rows={2} placeholder="Any notes about this borrower..." className="input-base resize-none" disabled={isSubmitting} />
         </div>
         <div className="flex gap-3 pt-2">
-          <button type="button" onClick={handleClose} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+          <button type="button" onClick={handleClose} disabled={isSubmitting} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 disabled:opacity-60 transition-colors">
             Cancel
           </button>
           <button type="submit" disabled={isSubmitting} className="flex-1 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 disabled:opacity-60 transition-opacity shadow-lg shadow-brand-500/25">
-            {isSubmitting ? 'Saving…' : isEdit ? 'Update' : 'Add Borrower'}
+            <LoadingButtonContent loading={isSubmitting} loadingText={isEdit ? 'Saving...' : 'Creating...'}>
+              {isEdit ? 'Update' : 'Add Borrower'}
+            </LoadingButtonContent>
           </button>
         </div>
       </form>

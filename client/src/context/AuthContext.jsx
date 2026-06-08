@@ -43,6 +43,11 @@ export const AuthProvider = ({ children }) => {
     return user
   }
 
+  const checkEmail = async (email) => {
+    const res = await api.post('/auth/check-email', { email })
+    return res.data.data.exists
+  }
+
   const logout = () => {
     localStorage.removeItem('cm_token')
     delete api.defaults.headers.common['Authorization']
@@ -58,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, login, register, checkEmail, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )

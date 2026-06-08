@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import Modal from './Modal'
 import { formatCurrency, formatDate } from '../utils/formatters'
+import { calculateInterest, roundMoney } from '../utils/finance'
+import { Spinner } from './Loading'
 
 const getMonthlyInterestAmount = (loan) => {
   if (!loan) return 0
-  return loan.monthlyInterestAmount ?? (Math.round(((loan.amount * loan.interestRate) / 100) * 100) / 100)
+  return loan.monthlyInterestAmount ?? calculateInterest(loan.amount, loan.interestRate)
 }
 
 const getNextDueDate = (loan) => {
@@ -48,7 +50,7 @@ export default function InterestCollectionModal({ isOpen, onClose, loan, onColle
   const interestAmount = getMonthlyInterestAmount(loan)
   const nextDueDate = getNextDueDate(loan)
   const overdueInterest = loan?.overdueInterest ?? 0
-  const collectNow = interestAmount + overdueInterest
+  const collectNow = roundMoney(interestAmount + overdueInterest)
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Collect Monthly Interest" size="sm">
@@ -100,6 +102,7 @@ export default function InterestCollectionModal({ isOpen, onClose, loan, onColle
             Cancel
           </button>
           <button type="submit" disabled={submitting || !loan} className="flex-1 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-medium hover:opacity-90 disabled:opacity-60 transition-opacity shadow-lg shadow-brand-500/25">
+            {submitting && <Spinner light className="mr-2 h-4 w-4 align-[-2px]" />}
             {submitting ? 'Collecting...' : 'Collect Interest'}
           </button>
         </div>

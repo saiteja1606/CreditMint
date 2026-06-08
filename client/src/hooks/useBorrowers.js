@@ -6,20 +6,26 @@ export const useBorrowers = (search = '') => {
   const [borrowers, setBorrowers] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const fetchBorrowers = useCallback(async () => {
+  const fetchBorrowers = useCallback(async (signal) => {
     setLoading(true)
     try {
       const params = search ? { search } : {}
-      const res = await api.get('/borrowers', { params })
+      const res = await api.get('/borrowers', { params, signal })
       setBorrowers(res.data.data.borrowers)
-    } catch {
-      toast.error('Failed to load borrowers')
+    } catch (err) {
+      if (err.name !== 'CanceledError' && err.code !== 'ERR_CANCELED') {
+        toast.error('Failed to load borrowers')
+      }
     } finally {
-      setLoading(false)
+      if (!signal?.aborted) setLoading(false)
     }
   }, [search])
 
-  useEffect(() => { fetchBorrowers() }, [fetchBorrowers])
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchBorrowers(controller.signal)
+    return () => controller.abort()
+  }, [fetchBorrowers])
 
   const createBorrower = async (data) => {
     const res = await api.post('/borrowers', data)

@@ -1,26 +1,26 @@
 /**
- * Format a number as Indian currency (₹)
+ * Format a number as Indian currency.
  */
 export const formatCurrency = (amount, compact = false) => {
-  if (amount === null || amount === undefined) return '₹0'
+  if (amount === null || amount === undefined) return '\u20B90.00'
   const num = parseFloat(amount)
   if (compact && num >= 100000) {
     const lakhs = num / 100000
-    return `₹${lakhs % 1 === 0 ? lakhs : lakhs.toFixed(1)}L`
+    return `\u20B9${lakhs % 1 === 0 ? lakhs : lakhs.toFixed(1)}L`
   }
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
     maximumFractionDigits: 2,
-    minimumFractionDigits: 0,
+    minimumFractionDigits: 2,
   }).format(num)
 }
 
 /**
- * Format a date to readable string
+ * Format a date to readable string.
  */
 export const formatDate = (date, opts = {}) => {
-  if (!date) return '—'
+  if (!date) return '-'
   return new Date(date).toLocaleDateString('en-IN', {
     day: '2-digit', month: 'short', year: 'numeric',
     ...opts,
@@ -28,7 +28,7 @@ export const formatDate = (date, opts = {}) => {
 }
 
 /**
- * Format date for input[type=date]
+ * Format date for input[type=date].
  */
 export const toInputDate = (date) => {
   if (!date) return ''
@@ -36,7 +36,7 @@ export const toInputDate = (date) => {
 }
 
 /**
- * Days until / since due date
+ * Days until / since due date.
  */
 export const dueDaysLabel = (dueDate) => {
   const now = new Date(); now.setHours(0, 0, 0, 0)
@@ -49,7 +49,7 @@ export const dueDaysLabel = (dueDate) => {
 }
 
 /**
- * Relative time label
+ * Relative time label.
  */
 export const timeAgo = (date) => {
   const now = new Date()
@@ -66,14 +66,14 @@ export const timeAgo = (date) => {
 }
 
 /**
- * Get initials from a name
+ * Get initials from a name.
  */
 export const getInitials = (name = '') => {
   return name.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()
 }
 
 /**
- * Build WhatsApp prefilled message URL
+ * Build WhatsApp prefilled message URL.
  */
 export const buildWhatsAppUrl = (phone, message) => {
   const cleaned = phone?.replace(/\D/g, '') || ''
@@ -82,7 +82,7 @@ export const buildWhatsAppUrl = (phone, message) => {
 }
 
 /**
- * Format month key (YYYY-MM) to label (Jan 24)
+ * Format month key (YYYY-MM) to label (Jan 24).
  */
 export const formatMonthKey = (key) => {
   if (!key) return ''

@@ -7,12 +7,14 @@ import PaymentModal from '../components/PaymentModal'
 import InterestCollectionModal from '../components/InterestCollectionModal'
 import EmptyState from '../components/EmptyState'
 import { Plus, Search, CreditCard } from 'lucide-react'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 
 const STATUS_FILTERS = ['ALL', 'PENDING', 'OVERDUE', 'PAID']
 
 export default function LoansPage() {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebouncedValue(search, 300)
   const [loanModalOpen, setLoanModalOpen] = useState(false)
   const [editLoan, setEditLoan] = useState(null)
   const [payLoan, setPayLoan] = useState(null)
@@ -20,7 +22,7 @@ export default function LoansPage() {
 
   const params = {}
   if (statusFilter !== 'ALL') params.status = statusFilter
-  if (search) params.search = search
+  if (debouncedSearch) params.search = debouncedSearch
 
   const { loans, loading, createLoan, updateLoan, deleteLoan, payLoan: recordPay, collectInterest } = useLoans(params)
   const { borrowers } = useBorrowers()
@@ -95,7 +97,7 @@ export default function LoansPage() {
         ) : loans.length === 0 ? (
           <EmptyState
             icon={CreditCard}
-            title={search || statusFilter !== 'ALL' ? 'No loans match your filters' : 'No loans yet'}
+            title={debouncedSearch || statusFilter !== 'ALL' ? 'No loans match your filters' : 'No loans yet'}
             description="Create your first loan to start tracking."
             action={<button onClick={openNew} className="rounded-2xl gradient-brand px-4 py-2.5 text-sm font-medium text-white">New Loan</button>}
           />

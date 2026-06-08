@@ -7,19 +7,26 @@ export const useLoans = (params = {}) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchLoans = useCallback(async () => {
+  const fetchLoans = useCallback(async (signal) => {
     setLoading(true)
     try {
-      const res = await api.get('/loans', { params })
+      setError(null)
+      const res = await api.get('/loans', { params, signal })
       setLoans(res.data.data.loans)
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load loans')
+      if (err.name !== 'CanceledError' && err.code !== 'ERR_CANCELED') {
+        setError(err.response?.data?.message || 'Failed to load loans')
+      }
     } finally {
-      setLoading(false)
+      if (!signal?.aborted) setLoading(false)
     }
   }, [JSON.stringify(params)])
 
-  useEffect(() => { fetchLoans() }, [fetchLoans])
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchLoans(controller.signal)
+    return () => controller.abort()
+  }, [fetchLoans])
 
   const createLoan = async (data) => {
     const res = await api.post('/loans', data)

@@ -6,16 +6,18 @@ import EmptyState from '../components/EmptyState'
 import { Plus, Search, Users, MoreVertical, Pencil, Trash2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 
 export default function BorrowersPage() {
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebouncedValue(search, 300)
   const [modalOpen, setModalOpen] = useState(false)
   const [editBorrower, setEditBorrower] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [activeMenu, setActiveMenu] = useState(null)
   const menuRef = useRef(null)
 
-  const { borrowers, loading, createBorrower, updateBorrower, deleteBorrower } = useBorrowers(search)
+  const { borrowers, loading, createBorrower, updateBorrower, deleteBorrower } = useBorrowers(debouncedSearch)
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -51,10 +53,10 @@ export default function BorrowersPage() {
 
   return (
     <div className="mobile-page mx-auto max-w-5xl space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Borrowers</h1>
-          <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">{borrowers.length} active contacts</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Borrowers</h1>
+          <p className="mt-0.5 text-[12px] text-slate-500 dark:text-slate-400">Manage your lending contacts</p>
         </div>
         <button onClick={openNew} className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl gradient-brand px-6 text-sm font-bold text-white shadow-lg shadow-brand-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] sm:w-auto">
           <Plus size={18} />
@@ -82,9 +84,9 @@ export default function BorrowersPage() {
       ) : borrowers.length === 0 ? (
         <EmptyState
           icon={Users}
-          title={search ? 'No borrowers found' : 'No borrowers yet'}
-          description={search ? 'Try a different search term.' : 'Add your first borrower to get started.'}
-          action={!search && (
+          title={debouncedSearch ? 'No borrowers found' : 'No borrowers yet'}
+          description={debouncedSearch ? 'Try a different search term.' : 'Add your first borrower to get started.'}
+          action={!debouncedSearch && (
             <button onClick={openNew} className="rounded-2xl gradient-brand px-4 py-2.5 text-sm font-medium text-white">
               Add Borrower
             </button>
