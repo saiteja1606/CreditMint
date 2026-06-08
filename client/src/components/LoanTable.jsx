@@ -2,13 +2,23 @@ import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import StatusBadge from './StatusBadge'
-import { formatCurrency, formatDate, dueDaysLabel } from '../utils/formatters'
+import { buildWhatsAppUrl, formatCurrency, formatDate, dueDaysLabel } from '../utils/formatters'
+import { WhatsAppIcon } from './WhatsAppButton'
 import { 
   MoreVertical, Eye, Pencil, Trash2, Wallet, 
   Percent, ChevronRight, Phone 
 } from 'lucide-react'
 
 const progress = (paid, total) => total > 0 ? Math.min(100, (paid / total) * 100) : 0
+
+const getLoanWhatsAppUrl = (loan) => {
+  if (!loan.borrower?.phone) return null
+
+  const remaining = loan.collectableAmount ?? (loan.totalAmount - loan.paidAmount)
+  const message = `Hi ${loan.borrower?.name || 'there'},\n\nThis is a payment reminder from Credit Mint.\n\nOutstanding Amount: ${formatCurrency(remaining)}\nDue Date: ${formatDate(loan.dueDate)}\n\nPlease arrange for payment at your earliest convenience.\n\nThank you!`
+
+  return buildWhatsAppUrl(loan.borrower.phone, message)
+}
 
 export default function LoanTable({ loans, onPay, onCollectInterest, onEdit, onDelete, showBorrower = true }) {
   const [activeMenu, setActiveMenu] = useState(null)

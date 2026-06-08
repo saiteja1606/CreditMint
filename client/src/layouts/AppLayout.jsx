@@ -41,6 +41,7 @@ export default function AppLayout() {
   const location = useLocation()
 
   useEffect(() => {
+    // Close sidebar on any location change
     setSidebarOpen(false)
   }, [location.pathname])
 
@@ -81,7 +82,10 @@ export default function AppLayout() {
           <NavLink
             key={to}
             to={to}
-            onClick={() => setSidebarOpen(false)}
+            onClick={(e) => {
+              // Close sidebar on navigation
+              setSidebarOpen(false)
+            }}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 group relative
               ${isActive
@@ -117,7 +121,9 @@ export default function AppLayout() {
       <div className="px-3 pb-4 space-y-2 border-t border-slate-200 dark:border-slate-700/60 pt-3">
         <NavLink 
           to="/profile" 
-          onClick={() => setSidebarOpen(false)}
+          onClick={(e) => {
+            setSidebarOpen(false)
+          }}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors group"
         >
           <div className="w-8 h-8 rounded-full gradient-brand flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
