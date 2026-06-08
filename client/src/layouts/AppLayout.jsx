@@ -35,16 +35,12 @@ const pageTitleMap = {
 
 export default function AppLayout() {
   const { user, logout } = useAuth()
-  const { theme, toggleTheme, isDark } = useTheme()
+  const { toggleTheme, isDark } = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const location = useLocation()
 
-  /**
-   * ISSUE 2 FIX: Close sidebar automatically when route changes
-   * This useEffect watches for location.pathname changes and closes the mobile sidebar
-   * Prevents sidebar from staying open after navigation
-   */
+  // ISSUE 2 FIX: Close sidebar automatically when route changes
   useEffect(() => {
     setSidebarOpen(false)
   }, [location.pathname])
@@ -67,14 +63,8 @@ export default function AppLayout() {
       ? 'Loan Details'
       : pageTitleMap[location.pathname] || 'Credit Mint'
 
-  /**
-   * ISSUE 2 FIX: Handle navigation click and close sidebar
-   * This function ensures the sidebar closes immediately when any nav item is clicked
-   * Works even when clicking the currently active route
-   */
+  // ISSUE 2 FIX: Handle navigation click and close sidebar
   const handleNavClick = () => {
-    // Close sidebar immediately on any navigation
-    // No setTimeout needed - direct state update for instant response
     setSidebarOpen(false)
   }
 
@@ -91,13 +81,13 @@ export default function AppLayout() {
         </div>
       </div>
 
-      {/* Nav */}
+      {/* Nav - ISSUE 2 FIX: Sidebar closes on navigation */}
       <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
-            onClick={handleNavClick} {/* ISSUE 2 FIX: Close sidebar on click */}
+            onClick={handleNavClick}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 group relative
               ${isActive
@@ -129,11 +119,11 @@ export default function AppLayout() {
         ))}
       </nav>
 
-      {/* User + Footer */}
+      {/* User + Footer - ISSUE 2 FIX: Profile link also closes sidebar */}
       <div className="px-3 pb-4 space-y-2 border-t border-slate-200 dark:border-slate-700/60 pt-3">
         <NavLink 
           to="/profile" 
-          onClick={handleNavClick} {/* ISSUE 2 FIX: Close sidebar when clicking profile */}
+          onClick={handleNavClick}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors group"
         >
           <div className="w-8 h-8 rounded-full gradient-brand flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -172,12 +162,11 @@ export default function AppLayout() {
         <SidebarContent />
       </aside>
 
-      {/* Mobile sidebar overlay */}
-      {/* ISSUE 2 & 3 FIX: Improved mobile sidebar with smooth animations */}
+      {/* Mobile sidebar overlay - ISSUE 2 & 3 FIX: Improved animations */}
       <AnimatePresence mode="wait">
         {sidebarOpen && (
           <>
-            {/* Backdrop - closes sidebar when clicked */}
+            {/* Backdrop */}
             <motion.div
               key="sidebar-backdrop"
               initial={{ opacity: 0 }} 
@@ -187,7 +176,7 @@ export default function AppLayout() {
               className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
               onClick={() => setSidebarOpen(false)}
             />
-            {/* Sidebar panel - slides in from left */}
+            {/* Sidebar panel */}
             <motion.aside
               key="sidebar-aside"
               initial={{ x: '-100%' }} 
@@ -196,7 +185,7 @@ export default function AppLayout() {
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
               className="fixed top-0 left-0 h-full w-[85vw] max-w-80 bg-white dark:bg-slate-800 z-50 lg:hidden border-r border-slate-200 dark:border-slate-700/60 shadow-2xl"
             >
-              {/* ISSUE 3 FIX: Improved close button positioning and sizing */}
+              {/* ISSUE 3 FIX: Improved close button */}
               <button 
                 onClick={() => setSidebarOpen(false)} 
                 aria-label="Close sidebar"
@@ -212,10 +201,8 @@ export default function AppLayout() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        {/* Mobile header */}
-        {/* ISSUE 3 FIX: Improved mobile header with better spacing and touch targets */}
+        {/* Mobile header - ISSUE 3 FIX: Improved spacing and touch targets */}
         <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-700/70 safe-area-inset-top">
-          {/* Hamburger button with accessible touch target (44x44px) */}
           <button 
             onClick={() => setSidebarOpen(true)} 
             aria-label="Open menu"
@@ -224,13 +211,11 @@ export default function AppLayout() {
             <Menu size={20} className="text-slate-600 dark:text-slate-300" />
           </button>
           
-          {/* Page title - prevents text overflow */}
           <div className="flex-1 min-w-0 overflow-hidden">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 truncate">Credit Mint</p>
             <h1 className="font-bold text-slate-900 dark:text-white text-base leading-tight truncate">{pageTitle}</h1>
           </div>
           
-          {/* Header actions with proper spacing */}
           <div className="flex items-center gap-2 shrink-0">
             <button 
               onClick={toggleTheme} 
@@ -252,8 +237,7 @@ export default function AppLayout() {
           </div>
         </header>
 
-        {/* Page content */}
-        {/* ISSUE 3 FIX: Improved content area with proper padding for mobile */}
+        {/* Page content - ISSUE 3 FIX: Improved padding */}
         <main className="flex-1 overflow-y-auto overscroll-behavior-contain">
           <motion.div
             key={location.pathname}
@@ -266,8 +250,7 @@ export default function AppLayout() {
           </motion.div>
         </main>
 
-        {/* Bottom navigation */}
-        {/* ISSUE 3 FIX: Improved mobile bottom nav with safe area insets */}
+        {/* Bottom navigation - ISSUE 3 FIX: Improved mobile nav */}
         <nav className="lg:hidden fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 dark:border-slate-700/80 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl pb-[max(env(safe-area-inset-bottom),0.5rem)] safe-area-inset-bottom">
           <div className="grid grid-cols-5 gap-0.5 px-1 pt-1.5">
             {mobileNavItems.map(({ to, icon: Icon, label }) => (
