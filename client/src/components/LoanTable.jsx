@@ -11,25 +11,34 @@ import {
 
 const progress = (paid, total) => total > 0 ? Math.min(100, (paid / total) * 100) : 0
 
+/**
+ * ISSUE 1 FIX: Generate properly formatted WhatsApp URL for loan reminders
+ * Ensures consistent message formatting across the app
+ */
 const getLoanWhatsAppUrl = (loan) => {
   if (!loan.borrower?.phone) return null
 
-  // Clean and validate phone number
+  // ISSUE 1 FIX: Clean and validate phone number (remove +, -, spaces, etc.)
   const cleanPhone = loan.borrower.phone.replace(/\D/g, '')
   if (!cleanPhone || cleanPhone.length < 10) return null
 
+  // Calculate outstanding amount
   const remaining = loan.collectableAmount ?? (loan.totalAmount - loan.paidAmount)
+  
+  // ISSUE 1 FIX: Properly formatted message with template literals (not \n)
+  // Matches the format in WhatsAppButton component for consistency
   const message = `Hi ${loan.borrower?.name || 'there'},
 
 This is a reminder from Credit Mint.
 
-💰 Outstanding Amount: ${formatCurrency(remaining)}
+📌 Outstanding Amount: ${formatCurrency(remaining)}
 📅 Due Date: ${formatDate(loan.dueDate)}
 
 Please arrange for payment at your earliest convenience.
 
 Thank you!`
 
+  // Use the same buildWhatsAppUrl function with proper encoding
   return buildWhatsAppUrl(cleanPhone, message)
 }
 

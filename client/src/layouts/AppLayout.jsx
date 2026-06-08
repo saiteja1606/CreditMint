@@ -40,8 +40,12 @@ export default function AppLayout() {
   const [unreadCount, setUnreadCount] = useState(0)
   const location = useLocation()
 
+  /**
+   * ISSUE 2 FIX: Close sidebar automatically when route changes
+   * This useEffect watches for location.pathname changes and closes the mobile sidebar
+   * Prevents sidebar from staying open after navigation
+   */
   useEffect(() => {
-    // Close sidebar on any location change
     setSidebarOpen(false)
   }, [location.pathname])
 
@@ -63,6 +67,17 @@ export default function AppLayout() {
       ? 'Loan Details'
       : pageTitleMap[location.pathname] || 'Credit Mint'
 
+  /**
+   * ISSUE 2 FIX: Handle navigation click and close sidebar
+   * This function ensures the sidebar closes immediately when any nav item is clicked
+   * Works even when clicking the currently active route
+   */
+  const handleNavClick = () => {
+    // Close sidebar immediately on any navigation
+    // No setTimeout needed - direct state update for instant response
+    setSidebarOpen(false)
+  }
+
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
       {/* Logo */}
@@ -82,10 +97,7 @@ export default function AppLayout() {
           <NavLink
             key={to}
             to={to}
-            onClick={() => {
-              // Always close sidebar when clicking any nav item
-              setTimeout(() => setSidebarOpen(false), 0)
-            }}
+            onClick={handleNavClick} {/* ISSUE 2 FIX: Close sidebar on click */}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 group relative
               ${isActive
@@ -121,10 +133,7 @@ export default function AppLayout() {
       <div className="px-3 pb-4 space-y-2 border-t border-slate-200 dark:border-slate-700/60 pt-3">
         <NavLink 
           to="/profile" 
-          onClick={() => {
-            // Always close sidebar when clicking profile
-            setTimeout(() => setSidebarOpen(false), 0)
-          }}
+          onClick={handleNavClick} {/* ISSUE 2 FIX: Close sidebar when clicking profile */}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors group"
         >
           <div className="w-8 h-8 rounded-full gradient-brand flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -164,30 +173,36 @@ export default function AppLayout() {
       </aside>
 
       {/* Mobile sidebar overlay */}
-      <AnimatePresence>
+      {/* ISSUE 2 & 3 FIX: Improved mobile sidebar with smooth animations */}
+      <AnimatePresence mode="wait">
         {sidebarOpen && (
           <>
+            {/* Backdrop - closes sidebar when clicked */}
             <motion.div
               key="sidebar-backdrop"
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
               onClick={() => setSidebarOpen(false)}
             />
+            {/* Sidebar panel - slides in from left */}
             <motion.aside
               key="sidebar-aside"
               initial={{ x: '-100%' }} 
               animate={{ x: 0 }} 
               exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 h-full w-[82vw] max-w-72 bg-white dark:bg-slate-800 z-50 lg:hidden border-r border-slate-200 dark:border-slate-700/60"
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed top-0 left-0 h-full w-[85vw] max-w-80 bg-white dark:bg-slate-800 z-50 lg:hidden border-r border-slate-200 dark:border-slate-700/60 shadow-2xl"
             >
+              {/* ISSUE 3 FIX: Improved close button positioning and sizing */}
               <button 
                 onClick={() => setSidebarOpen(false)} 
-                className="absolute top-4 right-4 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                aria-label="Close sidebar"
+                className="absolute top-4 right-4 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors z-10"
               >
-                <X size={18} className="text-slate-500" />
+                <X size={20} className="text-slate-500 dark:text-slate-400" />
               </button>
               <SidebarContent />
             </motion.aside>
@@ -198,63 +213,86 @@ export default function AppLayout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Mobile header */}
-        <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-700/70">
-          <button onClick={() => setSidebarOpen(true)} className="p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors min-h-11 min-w-11">
+        {/* ISSUE 3 FIX: Improved mobile header with better spacing and touch targets */}
+        <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-700/70 safe-area-inset-top">
+          {/* Hamburger button with accessible touch target (44x44px) */}
+          <button 
+            onClick={() => setSidebarOpen(true)} 
+            aria-label="Open menu"
+            className="p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+          >
             <Menu size={20} className="text-slate-600 dark:text-slate-300" />
           </button>
-          <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Credit Mint</p>
+          
+          {/* Page title - prevents text overflow */}
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 truncate">Credit Mint</p>
             <h1 className="font-bold text-slate-900 dark:text-white text-base leading-tight truncate">{pageTitle}</h1>
           </div>
-          <div className="ml-auto flex items-center gap-2">
-            <button onClick={toggleTheme} className="p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors min-h-11 min-w-11">
+          
+          {/* Header actions with proper spacing */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button 
+              onClick={toggleTheme} 
+              aria-label="Toggle theme"
+              className="p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+            >
               {isDark ? <Sun size={18} className="text-slate-500" /> : <Moon size={18} className="text-slate-500" />}
             </button>
-            <NavLink to="/notifications" className="relative p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors min-h-11 min-w-11">
+            <NavLink 
+              to="/notifications" 
+              aria-label="Notifications"
+              className="relative p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+            >
               <Bell size={18} className="text-slate-500" />
-              {unreadCount > 0 && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500" />}
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-800" />
+              )}
             </NavLink>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto">
+        {/* ISSUE 3 FIX: Improved content area with proper padding for mobile */}
+        <main className="flex-1 overflow-y-auto overscroll-behavior-contain">
           <motion.div
             key={location.pathname}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
-            className="min-h-full pb-24 lg:pb-0"
+            className="min-h-full pb-24 lg:pb-6"
           >
             <Outlet />
           </motion.div>
         </main>
 
-        <nav className="lg:hidden fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 dark:border-slate-700/80 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl pb-[max(env(safe-area-inset-bottom),0.5rem)]">
-          <div className="grid grid-cols-5 gap-1 px-2 pt-2">
+        {/* Bottom navigation */}
+        {/* ISSUE 3 FIX: Improved mobile bottom nav with safe area insets */}
+        <nav className="lg:hidden fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 dark:border-slate-700/80 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl pb-[max(env(safe-area-inset-bottom),0.5rem)] safe-area-inset-bottom">
+          <div className="grid grid-cols-5 gap-0.5 px-1 pt-1.5">
             {mobileNavItems.map(({ to, icon: Icon, label }) => (
               <NavLink
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-semibold transition-all min-h-[60px] ${
+                  `flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2.5 text-[11px] font-semibold transition-all touch-manipulation min-h-[64px] ${
                     isActive
                       ? 'bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300'
-                      : 'text-slate-500 dark:text-slate-400'
+                      : 'text-slate-500 dark:text-slate-400 active:bg-slate-100 dark:active:bg-slate-700/50'
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <div className={`relative flex h-8 w-8 items-center justify-center rounded-2xl transition-all ${isActive ? 'gradient-brand text-white shadow-lg shadow-brand-500/25' : 'bg-slate-100 dark:bg-slate-700/60'}`}>
-                      <Icon size={16} />
+                    <div className={`relative flex h-9 w-9 items-center justify-center rounded-2xl transition-all ${isActive ? 'gradient-brand text-white shadow-lg shadow-brand-500/25 scale-105' : 'bg-slate-100 dark:bg-slate-700/60'}`}>
+                      <Icon size={18} />
                       {label === 'Notifications' && unreadCount > 0 && (
-                        <span className="absolute -right-1 -top-1 min-w-[16px] rounded-full bg-red-500 px-1 text-[10px] font-bold leading-4 text-white">
+                        <span className="absolute -right-1 -top-1 min-w-[18px] h-[18px] rounded-full bg-red-500 px-1 text-[10px] font-bold leading-[18px] text-white shadow-sm">
                           {unreadCount > 9 ? '9+' : unreadCount}
                         </span>
                       )}
                     </div>
-                    <span className="truncate">{label}</span>
+                    <span className="truncate max-w-full">{label}</span>
                   </>
                 )}
               </NavLink>

@@ -74,10 +74,19 @@ export const getInitials = (name = '') => {
 
 /**
  * Build WhatsApp prefilled message URL.
+ * ISSUE 1 FIX: Properly encodes message for WhatsApp using encodeURIComponent
+ * Handles line breaks, emojis, special characters correctly
+ * 
+ * @param {string} phone - Phone number (will be cleaned to digits only)
+ * @param {string} message - Message text with line breaks and emojis
+ * @returns {string} WhatsApp URL with properly encoded message
  */
 export const buildWhatsAppUrl = (phone, message) => {
+  // Strip all non-digit characters (removes +, -, spaces, parentheses)
   const cleaned = phone?.replace(/\D/g, '') || ''
+  // Properly encode the message for URL - handles all special chars, emojis, line breaks
   const encoded = encodeURIComponent(message)
+  // Return WhatsApp web/mobile compatible URL
   return `https://wa.me/${cleaned}?text=${encoded}`
 }
 
