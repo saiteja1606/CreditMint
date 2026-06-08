@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const { Resend } = require('resend');
 
-const DEFAULT_FROM = 'Credit Mint <noreply@creditmint.app>';
+const DEFAULT_FROM = 'Credit Mint <noreply@creditmint.online>';;
 
 // Initialize Resend if API key is present
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
