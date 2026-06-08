@@ -82,9 +82,9 @@ export default function AppLayout() {
           <NavLink
             key={to}
             to={to}
-            onClick={(e) => {
-              // Close sidebar on navigation
-              setSidebarOpen(false)
+            onClick={() => {
+              // Always close sidebar when clicking any nav item
+              setTimeout(() => setSidebarOpen(false), 0)
             }}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 group relative
@@ -121,8 +121,9 @@ export default function AppLayout() {
       <div className="px-3 pb-4 space-y-2 border-t border-slate-200 dark:border-slate-700/60 pt-3">
         <NavLink 
           to="/profile" 
-          onClick={(e) => {
-            setSidebarOpen(false)
+          onClick={() => {
+            // Always close sidebar when clicking profile
+            setTimeout(() => setSidebarOpen(false), 0)
           }}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors group"
         >

@@ -9,6 +9,13 @@ export const WhatsAppIcon = ({ className = 'h-4 w-4' }) => (
 export default function WhatsAppButton({ borrower, loan, className = '' }) {
   if (!borrower?.phone) return null
 
+  // Clean and validate phone number
+  const cleanPhone = borrower.phone.replace(/\D/g, '')
+  if (!cleanPhone || cleanPhone.length < 10) {
+    console.warn('Invalid phone number:', borrower.phone)
+    return null
+  }
+
   const remaining = loan ? (loan.collectableAmount ?? (loan.totalAmount - loan.paidAmount)) : 0
   const message = loan
     ? `Hi ${borrower.name},
@@ -23,7 +30,7 @@ Please arrange for payment at your earliest convenience.
 Thank you!`
     : `Hi ${borrower.name}, this is a payment reminder from Credit Mint.`
 
-  const url = buildWhatsAppUrl(borrower.phone, message)
+  const url = buildWhatsAppUrl(cleanPhone, message)
 
   return (
     <a

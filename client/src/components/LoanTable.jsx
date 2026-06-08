@@ -14,10 +14,23 @@ const progress = (paid, total) => total > 0 ? Math.min(100, (paid / total) * 100
 const getLoanWhatsAppUrl = (loan) => {
   if (!loan.borrower?.phone) return null
 
-  const remaining = loan.collectableAmount ?? (loan.totalAmount - loan.paidAmount)
-  const message = `Hi ${loan.borrower?.name || 'there'},\n\nThis is a payment reminder from Credit Mint.\n\nOutstanding Amount: ${formatCurrency(remaining)}\nDue Date: ${formatDate(loan.dueDate)}\n\nPlease arrange for payment at your earliest convenience.\n\nThank you!`
+  // Clean and validate phone number
+  const cleanPhone = loan.borrower.phone.replace(/\D/g, '')
+  if (!cleanPhone || cleanPhone.length < 10) return null
 
-  return buildWhatsAppUrl(loan.borrower.phone, message)
+  const remaining = loan.collectableAmount ?? (loan.totalAmount - loan.paidAmount)
+  const message = `Hi ${loan.borrower?.name || 'there'},
+
+This is a reminder from Credit Mint.
+
+💰 Outstanding Amount: ${formatCurrency(remaining)}
+📅 Due Date: ${formatDate(loan.dueDate)}
+
+Please arrange for payment at your earliest convenience.
+
+Thank you!`
+
+  return buildWhatsAppUrl(cleanPhone, message)
 }
 
 export default function LoanTable({ loans, onPay, onCollectInterest, onEdit, onDelete, showBorrower = true }) {
