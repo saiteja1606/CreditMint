@@ -1,3 +1,5 @@
+const { calculateMonthlyInterest } = require('./interestService');
+
 const round2 = (value) => Math.round(value * 100) / 100;
 
 const diffWholeDays = (fromDate, toDate) => {
@@ -11,7 +13,7 @@ const diffWholeDays = (fromDate, toDate) => {
 const getLoanSnapshot = (loan, asOf = new Date()) => {
   const baseRemaining = Math.max(0, round2(loan.totalAmount - loan.paidAmount));
   const monthlyInterestAmount = loan.interestType === 'MONTHLY'
-    ? round2((loan.amount * loan.interestRate) / 100)
+    ? calculateMonthlyInterest(loan.amount, loan.interestRate)
     : 0;
   const overdueDays = loan.status === 'PAID' ? 0 : diffWholeDays(loan.dueDate, asOf);
   const overdueInterest = loan.interestType === 'MONTHLY' && overdueDays > 0

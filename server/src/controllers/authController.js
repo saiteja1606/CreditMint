@@ -7,6 +7,27 @@ const { syncUserWalletFields } = require('../services/walletService');
 const prisma = new PrismaClient();
 const normalizeEmail = (email) => email.trim().toLowerCase();
 
+// POST /api/auth/check-email
+const checkEmail = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const normalizedEmail = email ? normalizeEmail(email) : '';
+
+    if (!normalizedEmail) {
+      return badRequest(res, 'Email is required');
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true },
+    });
+
+    return success(res, { exists: Boolean(user) });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // POST /api/auth/register
 const register = async (req, res, next) => {
   try {
@@ -154,4 +175,4 @@ const changePassword = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, getProfile, updateProfile, changePassword };
+module.exports = { checkEmail, register, login, getProfile, updateProfile, changePassword };

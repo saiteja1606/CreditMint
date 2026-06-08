@@ -13,7 +13,20 @@
  * @param {Date} startDate
  * @param {Date} dueDate
  */
+const round2 = (value) => Math.round((Number(value) || 0) * 100) / 100;
+
+const calculateMonthlyInterest = (principal, rate) => {
+  const amount = Number(principal);
+  const percent = Number(rate);
+  if (!Number.isFinite(amount) || !Number.isFinite(percent) || amount < 0 || percent < 0) {
+    return 0;
+  }
+  return round2((amount * percent) / 100);
+};
+
 const calculateInterest = (principal, rate, type, startDate, dueDate) => {
+  const safePrincipal = Math.max(0, Number(principal) || 0);
+  const safeRate = Math.max(0, Number(rate) || 0);
   const start = new Date(startDate);
   const end = new Date(dueDate);
   const diffMs = end - start;
@@ -21,25 +34,25 @@ const calculateInterest = (principal, rate, type, startDate, dueDate) => {
 
   let totalInterest = 0;
 
-  if (rate <= 0) {
-    return { totalInterest: 0, totalAmount: principal };
+  if (safeRate <= 0) {
+    return { totalInterest: 0, totalAmount: round2(safePrincipal) };
   }
 
   if (diffDays < 0) {
-    return { totalInterest: 0, totalAmount: principal };
+    return { totalInterest: 0, totalAmount: round2(safePrincipal) };
   }
 
   if (type === 'SIMPLE') {
     // Flat percentage for the whole loan term
-    totalInterest = (principal * rate) / 100;
+    totalInterest = calculateMonthlyInterest(safePrincipal, safeRate);
   } else if (type === 'MONTHLY') {
     // Charge by calendar month difference, with same-month loans counting as one month
     const months = Math.max(1, ((end.getFullYear() - start.getFullYear()) * 12) + (end.getMonth() - start.getMonth()));
-    totalInterest = (principal * rate * months) / 100;
+    totalInterest = calculateMonthlyInterest(safePrincipal, safeRate) * months;
   }
 
-  totalInterest = Math.round(totalInterest * 100) / 100;
-  const totalAmount = Math.round((principal + totalInterest) * 100) / 100;
+  totalInterest = round2(totalInterest);
+  const totalAmount = round2(safePrincipal + totalInterest);
 
   return { totalInterest, totalAmount };
 };
@@ -53,4 +66,4 @@ const computeLoanStatus = (paidAmount, totalAmount, dueDate) => {
   return 'PENDING';
 };
 
-module.exports = { calculateInterest, computeLoanStatus };
+module.exports = { calculateInterest, calculateMonthlyInterest, computeLoanStatus };
